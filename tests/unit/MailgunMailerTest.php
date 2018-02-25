@@ -5,6 +5,7 @@ namespace tests\unit;
 use alexeevdv\mailer\MailgunMailer;
 use alexeevdv\mailer\MailgunMailerMessage;
 use Codeception\Stub;
+use Mailgun\Exception\HttpClientException;
 use Yii;
 use yii\base\InvalidConfigException;
 
@@ -77,10 +78,7 @@ class MailgunMailerTest extends \Codeception\Test\Unit
                 'messages' => function () {
                     return Stub::make(\Mailgun\Api\Message::class, [
                         'send' => function () {
-                            return \Mailgun\Model\Message\SendResponse::create([
-                                'id' => '',
-                                'message' => 'Smth is wrong!',
-                            ]);
+                            throw new HttpClientException('Smth wrong!', 500);
                         },
                     ]);
                 },

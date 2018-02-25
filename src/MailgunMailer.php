@@ -2,11 +2,13 @@
 
 namespace alexeevdv\mailer;
 
+use Mailgun\Exception\HttpClientException;
 use Mailgun\HttpClientConfigurator;
 use Mailgun\Mailgun;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\di\Instance;
+use yii\log\Logger;
 use yii\mail\BaseMailer;
 
 /**
@@ -58,9 +60,14 @@ class MailgunMailer extends BaseMailer
     protected function sendMessage($message)
     {
         $client = $this->getClient();
-        $response = $this->getClient()
-            ->messages()
-            ->send($this->domain, $message->getMessageBuilder()->getMessage());
+        try {
+            $response = $this->getClient()
+                ->messages()
+                ->send($this->domain, $message->getMessageBuilder()->getMessage());
+        } catch (HttpClientException $e) {
+            Yii::error($e->getMessage(), __METHOD__);
+            return false;
+        }
         return !!$response->getId();
     }
 
