@@ -57,9 +57,10 @@ class MailgunMailer extends BaseMailer
      */
     protected function sendMessage($message)
     {
+        $client = $this->getClient();
         $response = $this->getClient()
             ->messages()
-            ->send('example.com', $message->getMessageBuilder()->getMessage());
+            ->send($this->domain, $message->getMessageBuilder()->getMessage());
         return !!$response->getId();
     }
 
